@@ -7,6 +7,10 @@ export default {
     inject: ['errorHandler'],
 
     props: {
+        disableState: {
+            type: Boolean,
+            default: false,
+        },
         errorHandler: {
             type: Function,
             default: (error) => {
@@ -101,7 +105,7 @@ export default {
         init() {
             if (this.template) {
                 this.state.data = this.template;
-                this.$emit('ready');
+                this.$emit('ready', { form: this });
 
                 return;
             }
@@ -116,7 +120,7 @@ export default {
                     this.state.data = data.form;
                     this.setOriginal();
                     this.state.loading = false;
-                    this.$emit('ready');
+                    this.$emit('ready', { form: this });
                     this.$emit('loaded', data);
                 }).catch((error) => {
                     this.state.loading = false;
@@ -304,7 +308,7 @@ export default {
             this.$emit('undo');
         },
         dirty() {
-            return this.original
+            return !this.disableState && this.original
                 && JSON.stringify(this.formData) !== this.original;
         },
         hideTab(tab) {
